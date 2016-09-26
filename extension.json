@@ -1,0 +1,61 @@
+{
+	"name": "SharedHelpPages",
+	"version": "0.3",
+	"author": [
+		"Kunal Mehta",
+		"Jack Phoenix"
+	],
+	"license-name": "PD",
+	"url": "https://www.mediawiki.org/wiki/Extension:SharedHelpPages",
+	"descriptionmsg": "sharedhelppages-desc",
+	"type": "other",
+	"config": {
+		"SharedHelpPagesExpiry": 604800,
+		"SharedHelpLanguages": [
+			"en",
+			"fi",
+			"fr",
+			"nl"
+		]
+	},
+	"MessagesDirs": {
+		"SharedHelpPages": [
+			"i18n"
+		]
+	},
+	"AutoloadClasses": {
+		"SharedHelpPages": "SharedHelpPages.body.php",
+		"SharedHelpPagesHooks": "SharedHelpPages.hooks.php"
+	},
+	"Hooks": {
+		"ShowMissingArticle": [
+			"SharedHelpPagesHooks::onShowMissingArticle"
+		],
+		"SkinTemplateNavigation::Universal": [
+			"SharedHelpPagesHooks::onSkinTemplateNavigationUniversal"
+		],
+		"LinkBegin": [
+			"SharedHelpPagesHooks::brokenLink"
+		],
+		"EditPage::showEditForm:initial": [
+			"SharedHelpPagesHooks::displayMessageOnEditPage"
+		],
+		"WantedPages::getQueryInfo": [
+			"SharedHelpPagesHooks::modifyWantedPagesSQL"
+		],
+		"SkinTemplateOutputPageBeforeExec": [
+			"SharedHelpPagesHooks::onSkinTemplateOutputPageBeforeExec"
+		]
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "SharedHelpPages"
+	},
+	"ResourceModules": {
+		"ext.SharedHelpPages": {
+			"styles": "ext.SharedHelpPages.css",
+			"position": "top"
+		}
+	},
+	"manifest_version": 1
+}

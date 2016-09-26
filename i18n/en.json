@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kunal Mehta"
+		]
+	},
+	"sharedhelppages-desc": "Automatically fetches help pages from [http://www.shoutwiki.com/ ShoutWiki Hub]",
+	"sharedhelppages-notice": "This page was downloaded from [http://www.shoutwiki.com/?oldid=$1 ShoutWiki Hub] and can be edited there.",
+	"sharedhelppages-edit-tab": "Edit on ShoutWiki Hub"
+}

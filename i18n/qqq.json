@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kunal Mehta",
+			"Shirayuki"
+		]
+	},
+	"sharedhelppages-desc": "{{desc|name=SharedHelpPages|url=http://www.shoutwiki.com/wiki/Extension:SharedHelpPages}}",
+	"sharedhelppages-notice": "Message shown above help pages from ShoutWiki Hub. Parameters:\n* $1 - the revision id of the page that was fetched",
+	"sharedhelppages-edit-tab": "Text on tab that replaces \"create\", and links to the edit interface on ShoutWiki Hub"
+}

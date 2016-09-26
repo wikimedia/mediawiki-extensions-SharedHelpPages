@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gomoko"
+		]
+	},
+	"sharedhelppages-desc": "Extrait automatiquement les pages d’aide de [http://www.shoutwiki.com/ ShoutWiki Hub]",
+	"sharedhelppages-notice": "La page a été téléchargée depuis [http://www.shoutwiki.com/?oldid=$1 ShoutWiki Hub] et peut être modifiée ici.",
+	"sharedhelppages-edit-tab": "Modifier sur ShoutWiki Hub"
+}
