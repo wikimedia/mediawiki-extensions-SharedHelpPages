@@ -5,6 +5,6 @@
 		]
 	},
 	"sharedhelppages-desc": "Busca automaticamente páxinas de axuda de [http://www.shoutwiki.com/ ShoutWiki Hub]",
-	"sharedhelppages-notice": "Esta páxina descargouse de [http://www.shoutwiki.com/?oldid=$1 ShoutWiki Hub] e pode editarse alí.",
+	"sharedhelppages-notice": "Esta páxina descargouse de [http://www.shoutwiki.com/wiki/$1 ShoutWiki Hub] e pode editarse alí.",
 	"sharedhelppages-edit-tab": "Editar en ShoutWiki Hub"
 }

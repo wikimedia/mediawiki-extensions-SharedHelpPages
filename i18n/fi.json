@@ -1,10 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jack Phoenix <jack@countervandalism.net>"
+			"Jack Phoenix"
 		]
 	},
-	"sharedhelppages-desc": "Automaattisesti hakee ohjesivut [http://www.shoutwiki.com/ ShoutWikin englanninkielisestä keskuswikistä]",
-	"sharedhelppages-notice": "Tämä sivu ladattiin [http://www.shoutwiki.com/?oldid=$1 ShoutWikin englanninkielisestä keskuswikistä] ja sitä voi muokata siellä.",
-	"sharedhelppages-edit-tab": "Muokkaa ShoutWiki Hubissa"
+	"sharedhelppages-desc": "Automaattisesti hakee ohjesivut [http://fi.shoutwiki.com/ ShoutWikin keskuswikistä]",
+	"sharedhelppages-notice": "Tämä sivu ladattiin [http://fi.shoutwiki.com/wiki/$1 ShoutWikin keskuswikistä] ja sitä voi muokata siellä.",
+	"sharedhelppages-edit-tab": "Muokkaa ShoutWikin keskuswikissä"
 }

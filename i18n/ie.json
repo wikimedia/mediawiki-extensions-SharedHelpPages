@@ -5,6 +5,6 @@
 		]
 	},
 	"sharedhelppages-desc": "Automaticmen prender auxiliari págines de [http://www.shoutwiki.com/ ShoutWiki Hub]",
-	"sharedhelppages-notice": "Ti-ci págine ha esset prendet de [http://www.shoutwiki.com/?oldid=$1 ShoutWiki Hub] e es redactibil ta.",
+	"sharedhelppages-notice": "Ti-ci págine ha esset prendet de [http://www.shoutwiki.com/wiki/$1 ShoutWiki Hub] e es redactibil ta.",
 	"sharedhelppages-edit-tab": "Redacter che ShoutWiki Hub"
 }

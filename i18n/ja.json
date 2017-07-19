@@ -5,6 +5,6 @@
 		]
 	},
 	"sharedhelppages-desc": "ヘルプ ページを [http://www.shoutwiki.com/ ShoutWiki Hub] から自動的に取得する",
-	"sharedhelppages-notice": "このページは [http://www.shoutwiki.com/?oldid=$1 ShoutWiki Hub] からダウンロードされたため、ShoutWiki Hub で編集できます。",
+	"sharedhelppages-notice": "このページは [http://www.shoutwiki.com/wiki/$1 ShoutWiki Hub] からダウンロードされたため、ShoutWiki Hub で編集できます。",
 	"sharedhelppages-edit-tab": "ShoutWiki Hub 上で編集"
 }

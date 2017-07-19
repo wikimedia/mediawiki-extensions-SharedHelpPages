@@ -1,6 +1,6 @@
 {
 	"name": "SharedHelpPages",
-	"version": "0.3",
+	"version": "0.5",
 	"author": [
 		"Kunal Mehta",
 		"Jack Phoenix"
@@ -9,8 +9,14 @@
 	"url": "https://www.mediawiki.org/wiki/Extension:SharedHelpPages",
 	"descriptionmsg": "sharedhelppages-desc",
 	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.29.0"
+	},
 	"config": {
-		"SharedHelpPagesExpiry": 604800,
+		"SharedHelpPagesDevelopmentMode": false,
+		"SharedHelpPagesCacheExpiry": 604800,
+		"SharedHelpPagesAPIUrl": "http://www.shoutwiki.com/w/api.php",
+		"SharedHelpPagesTimeout": 10,
 		"SharedHelpLanguages": [
 			"en",
 			"fi",
@@ -24,28 +30,24 @@
 		]
 	},
 	"AutoloadClasses": {
-		"SharedHelpPages": "SharedHelpPages.body.php",
-		"SharedHelpPagesHooks": "SharedHelpPages.hooks.php"
+		"SharedHelpPagesHooks": "SharedHelpPages.hooks.php",
+		"SharedHelpPage": "SharedHelpPage.body.php",
+		"SharedHelpPagePage": "SharedHelpPagePage.php",
+		"SharedHelpPageCacheInvalidator": "SharedHelpPageCacheInvalidator.php",
+		"SharedHelpPageLocalJobSubmitJob": "SharedHelpPageLocalJobSubmitJob.php",
+		"LocalSharedHelpPageCacheUpdateJob": "LocalSharedHelpPageCacheUpdateJob.php"
 	},
 	"Hooks": {
-		"ShowMissingArticle": [
-			"SharedHelpPagesHooks::onShowMissingArticle"
-		],
-		"SkinTemplateNavigation::Universal": [
-			"SharedHelpPagesHooks::onSkinTemplateNavigationUniversal"
-		],
-		"LinkBegin": [
-			"SharedHelpPagesHooks::brokenLink"
-		],
-		"EditPage::showEditForm:initial": [
-			"SharedHelpPagesHooks::displayMessageOnEditPage"
-		],
-		"WantedPages::getQueryInfo": [
-			"SharedHelpPagesHooks::modifyWantedPagesSQL"
-		],
-		"SkinTemplateOutputPageBeforeExec": [
-			"SharedHelpPagesHooks::onSkinTemplateOutputPageBeforeExec"
-		]
+		"EditPage::showEditForm:initial": "SharedHelpPagesHooks::displayMessageOnEditPage",
+		"SkinTemplateOutputPageBeforeExec": "SharedHelpPagesHooks::onSkinTemplateOutputPageBeforeExec",
+		"SkinTemplateNavigation::Universal": "SharedHelpPagesHooks::onSkinTemplateNavigationUniversal",
+		"TitleIsAlwaysKnown": "SharedHelpPagesHooks::onTitleIsAlwaysKnown",
+		"ArticleFromTitle": "SharedHelpPagesHooks::onArticleFromTitle",
+		"LinksUpdateComplete": "SharedHelpPagesHooks::onLinksUpdateComplete",
+		"PageContentInsertComplete": "SharedHelpPagesHooks::onPageContentInsertComplete",
+		"ArticleDeleteComplete": "SharedHelpPagesHooks::onArticleDeleteComplete",
+		"WikiPageFactory": "SharedHelpPagesHooks::onWikiPageFactory",
+		"WantedPages::getQueryInfo": "SharedHelpPagesHooks::modifyWantedPagesSQL"
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "",
@@ -56,6 +58,13 @@
 			"styles": "ext.SharedHelpPages.css",
 			"position": "top"
 		}
+	},
+	"JobClasses": {
+		"SharedHelpPageLocalJobSubmitJob": "SharedHelpPageLocalJobSubmitJob",
+		"LocalSharedHelpPageCacheUpdateJob": "LocalSharedHelpPageCacheUpdateJob"
+	},
+	"ConfigRegistry": {
+		"sharedhelppages": "GlobalVarConfig::newInstance"
 	},
 	"manifest_version": 1
 }

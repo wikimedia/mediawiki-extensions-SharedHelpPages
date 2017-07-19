@@ -1,39 +1,95 @@
 <?php
 
 class SharedHelpPagesHooks {
+
 	/**
-	 * @param $article Article
+	 * @param Title $title
+	 * @param Article|null $page
+	 * @param IContextSource $context
 	 * @return bool
 	 */
-	public static function onShowMissingArticle( $article ) {
-		$context = $article->getContext();
-		$output = $context->getOutput();
-		$title = $article->getTitle();
-
-		if ( $title->getNamespace() == NS_HELP ) {
-			global $wgDBname;
-
-			$sharedHelpDBname = SharedHelpPages::determineDatabase();
-
-			// Don't run this code on the source wiki of the shared help pages.
-			// Also don't run this code if SharedHelpPages isn't enabled for the
-			// current wiki's language (for performance reasons).
-			if ( $wgDBname == $sharedHelpDBname || !SharedHelpPages::isSupportedLanguage() ) {
-				return true;
-			}
-
-			list( $text, $oldid ) = SharedHelpPages::getPagePlusFallbacks( 'Help:' . $title->getText() );
-			if ( $text ) {
-				// Add a notice indicating that it was taken from ShoutWiki Hub
-				// noticed moved to the EditPage hook --ashley, 24 December 2013
-				//$output->addHTML( $context->msg( 'sharedhelppages-notice', $oldid )->parse() );
-				$output->addHTML( $text );
-				// Hide the "this page does not exist" notice and edit section links
-				$output->addModuleStyles( 'ext.SharedHelpPages' );
-			}
+	public static function onArticleFromTitle( Title &$title, &$page, $context ) {
+		// If another extension's hook has already run, don't override it
+		if ( $page === null
+			&& $title->inNamespace( NS_HELP ) && !$title->exists()
+			&& SharedHelpPage::shouldDisplaySharedPage( $title )
+		) {
+			$page = new SharedHelpPage(
+				$title,
+				ConfigFactory::getDefaultInstance()->makeConfig( 'sharedhelppages' )
+			);
 		}
 
 		return true;
+	}
+
+	/**
+	 * Mark shared help pages as known so they appear in blue
+	 *
+	 * @param Title $title Title to check
+	 * @param bool &$isKnown Whether the page should be considered known
+	 * @return bool
+	 */
+	public static function onTitleIsAlwaysKnown( $title, &$isKnown ) {
+		if ( SharedHelpPage::shouldDisplaySharedPage( $title ) ) {
+			$isKnown = true;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Whether a page is a shared help page on the Hub wiki
+	 *
+	 * @param Title $title
+	 * @return bool
+	 */
+	protected static function isSharedHelpPage( Title $title ) {
+		return self::determineDatabase() === wfWikiID() // On the Hub wiki
+			&& $title->inNamespace( NS_HELP ); // is a help page.
+	}
+
+	/**
+	 * After a LinksUpdate runs for a help page, queue remote Squid purges
+	 *
+	 * @param LinksUpdate $lu
+	 * @return bool
+	 */
+	public static function onLinksUpdateComplete( LinksUpdate &$lu ) {
+		$title = $lu->getTitle();
+		if ( self::isSharedHelpPage( $title ) ) {
+			$inv = new SharedHelpPageCacheInvalidator( $title->getText() );
+			$inv->invalidate();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Invalidate cache on remote wikis when a new page is created
+	 * Also handles the ArticleDeleteComplete hook
+	 *
+	 * @param WikiPage $page
+	 * @return bool
+	 */
+	public static function onPageContentInsertComplete( WikiPage $page ) {
+		$title = $page->getTitle();
+		if ( self::isSharedHelpPage( $title ) ) {
+			$inv = new SharedHelpPageCacheInvalidator( $title->getText(), [ 'links' ] );
+			$inv->invalidate();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Invalidate cache on remote wikis when a shared help page is deleted
+	 *
+	 * @param WikiPage $page
+	 * @return bool
+	 */
+	public static function onArticleDeleteComplete( WikiPage $page ) {
+		return self::onPageContentInsertComplete( $page );
 	}
 
 	/**
@@ -44,61 +100,33 @@ class SharedHelpPagesHooks {
 	 * This function originally changed the "edit" links to point to a different
 	 * wiki for pages in the Help: namespace.
 	 *
-	 * @param SkinTemplate $sktemplate
+	 * @param SkinTemplate $skTemplate
 	 * @param array $links
 	 * @return bool
 	 */
-	public static function onSkinTemplateNavigationUniversal( &$sktemplate, &$links ) {
-		$context = $sktemplate->getContext();
-		$title = $sktemplate->getTitle();
+	public static function onSkinTemplateNavigationUniversal( &$skTemplate, &$links ) {
+		$title = $skTemplate->getTitle();
 
-		if ( $title->getNamespace() == NS_HELP ) {
-			global $wgDBname;
-
-			$sharedHelpDBname = SharedHelpPages::determineDatabase();
-
+		if ( $title->inNamespace( NS_HELP ) ) {
 			// Don't run this code on the source wiki of the shared help pages.
 			// Also don't run this code if SharedHelpPages isn't enabled for the
 			// current wiki's language.
-			if ( $wgDBname == $sharedHelpDBname || !SharedHelpPages::isSupportedLanguage() ) {
+			if ( self::determineDatabase() === wfWikiID() || !self::isSupportedLanguage() ) {
 				return true;
 			}
 
-			list( $text, $oldid ) = SharedHelpPages::getPagePlusFallbacks( 'Help:' . $title->getText() );
-			if ( $text ) {
-				/*
-				global $wgLanguageCode, $wgSharedHelpLanguages;
-
-				// Determine the correct subdomain
-				if (
-					in_array( $wgLanguageCode, $wgSharedHelpLanguages ) &&
-					!in_array( $wgLanguageCode, array( 'en', 'en-gb', 'en-ca' ) )
-				)
-				{
-					$langCode = $wgLanguageCode;
-				} else {
-					$langCode = 'www';
-				}
-				*/
+			if ( SharedHelpPage::shouldDisplaySharedPage( $title ) ) {
+				// This removes the additional "View on www.shoutwiki.com" tab/
+				// link from the content actions array on Help: pages
+				unset( $links['views']['view-foreign'] );
+				// And this changes the edit tab's(/link's) text back to "Create"
+				// from "Add local description" (which is just plain wtf as that
+				// string literally makes no sense for any other context than
+				// foreign _file_ pages)
+				$links['views']['edit']['text'] = $skTemplate->msg( 'create' )->text();
 
 				$links['namespaces']['help']['class'] = 'selected';
 				$links['namespaces']['help']['href'] = $title->getFullURL();
-				/*
-				$links['namespaces']['help_talk']['class'] = '';
-				$links['namespaces']['help_talk']['href'] = "http://{$langCode}.shoutwiki.com/wiki/Help_talk:" . $title->getText();
-				$links['views'] = array(); // Kill the 'Create' button @todo make this suck less
-				$links['views'][] = array(
-					'class' => false,
-					'text' => $context->msg( 'sharedhelppages-edit-tab' ),
-					'href' => wfAppendQuery(
-						"http://{$langCode}.shoutwiki.com/w/index.php",
-						array(
-							'action' => 'edit',
-							'title' => $title->getPrefixedText()
-						)
-					)
-				);
-				*/
 			}
 		}
 
@@ -106,91 +134,17 @@ class SharedHelpPagesHooks {
 	}
 
 	/**
-	 * Use action=purge to clear cache
-	 *
-	 * @param $article Article
+	 * @param Title $title
+	 * @param $page
 	 * @return bool
 	 */
-	public static function onArticlePurge( &$article ) {
-		global $wgMemc;
-
-		$title = $article->getContext()->getTitle();
-		$key = SharedHelpPages::getCacheKey( $title );
-		$wgMemc->delete( $key );
-
-		return true;
-	}
-
-	/**
-	 * Turn red Help: links into blue ones
-	 *
-	 * @param $linker
-	 * @param $target Title
-	 * @param $text String
-	 * @param $customAtrribs Array: array of custom attributes [unused]
-	 * @param $query [unused]
-	 * @param $ret String: return value (link HTML)
-	 * @return Boolean
-	 */
-	public static function brokenLink( $linker, $target, &$text, &$customAttribs, &$query, &$options, &$ret ) {
-		global $wgDBname;
-
-		$sharedHelpDBname = SharedHelpPages::determineDatabase();
-
-		// Don't run this code on the source wiki of the shared help pages.
-		// Also don't run this code if SharedHelpPages isn't enabled for the
-		// current wiki's language.
-		if ( $wgDBname == $sharedHelpDBname || !SharedHelpPages::isSupportedLanguage() ) {
-			return true;
-		}
-
-		if ( $target->getNamespace() == NS_HELP ) {
-			// return immediately if we know it's real
-			// this part "borrowed" from ^demon's RemoveRedlinks, dunno if
-			// we really need it anymore, but idk
-			if ( in_array( 'known', $options ) || $target->isKnown() ) {
-				return true;
-			} else {
-				$ret = Linker::linkKnown( $target, $text );
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Shows a warning-ish message on &action=edit whenever a user tries to
-	 * edit a shared help page
-	 *
-	 * @param $editPage EditPage
-	 * @return Boolean: true
-	 */
-	public static function displayMessageOnEditPage( &$editPage ) {
-		global $wgDBname;
-
-		$title = $editPage->getTitle();
-
-		// do not show this message on the help wiki
-		// Also don't run this code if SharedHelpPages isn't enabled for the
-		// current wiki's language.
-		if ( $wgDBname == SharedHelpPages::determineDatabase() || !SharedHelpPages::isSupportedLanguage() ) {
-			return true;
-		}
-
-		// show message only when editing pages from Help namespace
-		if ( $title->getNamespace() != 12 ) {
-			return true;
-		}
-
-		list( $text, $oldid ) = SharedHelpPages::getPagePlusFallbacks( 'Help:' . $title->getText() );
-		if ( $text ) {
-			// Add a notice indicating that the content was originally taken from ShoutWiki Hub
-			$msg = '<div style="border: solid 1px; padding: 10px; margin: 5px" class="sharedHelpEditInfo">';
-			$msg .= wfMessage( 'sharedhelppages-notice', $oldid )->parse();
-			$msg .= '</div>';
-
-			$editPage->editFormPageTop .= $msg;
+	public static function onWikiPageFactory( Title $title, &$page ) {
+		if ( SharedHelpPage::shouldDisplaySharedPage( $title ) ) {
+			$page = new SharedHelpPagePage(
+				$title,
+				ConfigFactory::getDefaultInstance()->makeConfig( 'sharedhelppages' )
+			);
+			return false;
 		}
 
 		return true;
@@ -202,19 +156,19 @@ class SharedHelpPagesHooks {
 	 *
 	 * Hooked into the WantedPages::getQueryInfo hook.
 	 *
-	 * @param $wantedPagesPage WantedPagesPage
-	 * @param $array Array: SQL query conditions
-	 * @return Boolean: true
+	 * @param WantedPagesPage $wantedPagesPage
+	 * @param array $array SQL query conditions
+	 * @return bool
 	 */
 	public static function modifyWantedPagesSQL( $wantedPagesPage, $query ) {
 		global $wgDBname;
 
-		$sharedHelpDBname = SharedHelpPages::determineDatabase();
+		$sharedHelpDBname = self::determineDatabase();
 
 		// Don't run this code on the source wiki of the shared help pages.
 		// Also don't run this code if SharedHelpPages isn't enabled for the
 		// current wiki's language.
-		if ( $wgDBname == $sharedHelpDBname || !SharedHelpPages::isSupportedLanguage() ) {
+		if ( $wgDBname == $sharedHelpDBname || !self::isSupportedLanguage() ) {
 			return true;
 		}
 
@@ -228,6 +182,43 @@ class SharedHelpPagesHooks {
 				'pl_title = pg3.page_title'
 			)
 		);
+
+		return true;
+	}
+
+	/**
+	 * Shows a warning-ish message on &action=edit whenever a user tries to
+	 * edit a shared help page
+	 *
+	 * @param EditPage $editPage
+	 * @return bool
+	 */
+	public static function displayMessageOnEditPage( &$editPage ) {
+		global $wgDBname;
+
+		$title = $editPage->getTitle();
+
+		// do not show this message on the help wiki
+		// Also don't run this code if SharedHelpPages isn't enabled for the
+		// current wiki's language.
+		if ( $wgDBname == self::determineDatabase() || !self::isSupportedLanguage() ) {
+			return true;
+		}
+
+		// show message only when editing pages from Help namespace
+		if ( !$title->inNamespace( NS_HELP ) ) {
+			return true;
+		}
+
+		if ( SharedHelpPage::shouldDisplaySharedPage( $title ) ) {
+			// Add a notice indicating that the content was originally taken from ShoutWiki Hub
+			$msg = '<div style="border: solid 1px; padding: 10px; margin: 5px" class="sharedHelpEditInfo">';
+			$msg .= wfMessage( 'sharedhelppages-notice', $title->getPrefixedText() )->parse();
+			$msg .= '</div>';
+
+			$editPage->editFormPageTop .= $msg;
+		}
+
 		return true;
 	}
 
@@ -238,27 +229,70 @@ class SharedHelpPagesHooks {
 	 * This enables the display of "Content is available under <license>" message
 	 * in the page footer instead of only the copyright icon being displayed.
 	 *
-	 * @param $skTpl SkinTemplate
-	 * @param $tpl A subclass of SkinTemplate, i.e. for Monobook it'd be MonobookTemplate
-	 * @return Boolean
+	 * @param SkinTemplate $skTpl
+	 * @param SkinTemplate|MonoBookTemplate|VectorTemplate|... $tpl A subclass of SkinTemplate, i.e. for MonoBook it'd be MonoBookTemplate
+	 * @return bool
 	 */
 	public static function onSkinTemplateOutputPageBeforeExec( &$skTpl, &$tpl ) {
 		global $wgDBname;
 
-		$sharedHelpDBname = SharedHelpPages::determineDatabase();
+		$sharedHelpDBname = self::determineDatabase();
 
 		// Don't run this code on the source wiki of the shared help pages.
 		// Also don't run this code if SharedHelpPages isn't enabled for the
 		// current wiki's language.
-		if ( $wgDBname == $sharedHelpDBname || !SharedHelpPages::isSupportedLanguage() ) {
+		if ( $wgDBname == $sharedHelpDBname || !self::isSupportedLanguage() ) {
 			return true;
 		}
 
 		$title = $skTpl->getTitle();
-		if ( $title->getNamespace() == NS_HELP ) {
+		if ( $title->inNamespace( NS_HELP ) ) {
 			$tpl->set( 'copyright', $skTpl->getCopyright() );
 		}
 
 		return true;
+	}
+
+	// UTILITY METHODS WHICH ARE NOT HOOKED FUNCTIONS THEMSELVES //
+
+	/**
+	 * Determine the proper help wiki database, based on current wiki's
+	 * language code.
+	 *
+	 * By default this is assumed to follow the languagecode_wiki format.
+	 * Exceptions to this rule are:
+	 * 1) English and all of its variants, which fall back to the shoutwiki DB
+	 * 2) Language is not in the $wgSharedHelpLanguages array --> shoutwiki DB
+	 *
+	 * @return string|bool Database name (string) normally, boolean true on the help
+	 *                wiki
+	 */
+	public static function determineDatabase() {
+		global $wgLanguageCode, $wgSharedHelpLanguages;
+
+		if ( in_array( $wgLanguageCode, $wgSharedHelpLanguages ) && $wgLanguageCode !== 'en' ) {
+			$helpDBname = "{$wgLanguageCode}_wiki";
+		} elseif ( in_array( $wgLanguageCode, array( 'en', 'en-gb', 'en-ca' ) ) ) {
+			$helpDBname = 'shoutwiki';
+		} else {
+			// fall back to English help
+			$helpDBname = 'shoutwiki';
+		}
+
+		return $helpDBname;
+	}
+
+	/**
+	 * Is SharedHelpPages available for the current wiki's language (code)?
+	 *
+	 * @param string $langCode ISO 639 language code
+	 * @return bool True if it's available, otherwise false
+	 */
+	public static function isSupportedLanguage() {
+		global $wgLanguageCode, $wgSharedHelpLanguages;
+
+		$isEnglish = in_array( $wgLanguageCode, array( 'en', 'en-gb', 'en-ca' ) );
+
+		return ( in_array( $wgLanguageCode, $wgSharedHelpLanguages ) || $isEnglish );
 	}
 }
