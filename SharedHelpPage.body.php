@@ -276,8 +276,8 @@ class SharedHelpPage extends Article {
 		// either from memcached, or failing that, via an API query.
 		global $wgContLang, $wgLanguageCode, $wgMemc;
 
-		$projectNSCacheKey = wfMemcKey( 'helppages', $wgLanguageCode, 'projectns' );
-		$projectTalkNSCacheKey = wfMemcKey( 'helppages', $wgLanguageCode, 'projecttalkns' );
+		$projectNSCacheKey = $wgMemc->makeKey( 'helppages', $wgLanguageCode, 'projectns' );
+		$projectTalkNSCacheKey = $wgMemc->makeKey( 'helppages', $wgLanguageCode, 'projecttalkns' );
 
 		$remoteWikiProjectNS = $wgMemc->get( $projectNSCacheKey );
 		$remoteWikiProjectTalkNS = $wgMemc->get( $projectTalkNSCacheKey );
