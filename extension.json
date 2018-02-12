@@ -55,8 +55,7 @@
 	},
 	"ResourceModules": {
 		"ext.SharedHelpPages": {
-			"styles": "ext.SharedHelpPages.css",
-			"position": "top"
+			"styles": "ext.SharedHelpPages.css"
 		}
 	},
 	"JobClasses": {
