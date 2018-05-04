@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\MediaWikiServices;
+
 class SharedHelpPage extends Article {
 
 	/**
@@ -140,7 +142,8 @@ class SharedHelpPage extends Article {
 		}
 
 		$sharedHelpDB = SharedHelpPagesHooks::determineDatabase();
-		$lb = wfGetLB( $sharedHelpDB );
+		$lbFactory = MediaWikiServices::getInstance()->getDBLoadBalancerFactory();
+		$lb = $lbFactory->getMainLB( $sharedHelpDB );
 		$dbr = $lb->getConnectionRef( DB_REPLICA, [], $sharedHelpDB );
 		$row = $dbr->selectRow(
 			[ 'page' ],
