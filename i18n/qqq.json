@@ -5,7 +5,7 @@
 			"Shirayuki"
 		]
 	},
-	"sharedhelppages-desc": "{{desc|name=SharedHelpPages|url=http://www.mediawiki.org/wiki/Extension:SharedHelpPages}}",
+	"sharedhelppages-desc": "{{desc|name=SharedHelpPages|url=https://www.mediawiki.org/wiki/Extension:SharedHelpPages}}",
 	"sharedhelppages-notice": "Message shown above help pages from ShoutWiki Hub. Parameters:\n* $1 - the name of the help page that was fetched",
 	"sharedhelppages-edit-tab": "Text on tab that replaces \"create\", and links to the edit interface on ShoutWiki Hub"
 }
