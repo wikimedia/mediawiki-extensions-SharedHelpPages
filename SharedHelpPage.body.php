@@ -277,7 +277,7 @@ class SharedHelpPage extends Article {
 		// bad for things like the project namespace name and whatnot.
 		// So, we need to get the remote wiki's project (&project talk) NS names;
 		// either from memcached, or failing that, via an API query.
-		global $wgContLang, $wgLanguageCode, $wgMemc;
+		global $wgLanguageCode, $wgMemc;
 
 		$projectNSCacheKey = $wgMemc->makeKey( 'helppages', $wgLanguageCode, 'projectns' );
 		$projectTalkNSCacheKey = $wgMemc->makeKey( 'helppages', $wgLanguageCode, 'projecttalkns' );
@@ -315,14 +315,15 @@ class SharedHelpPage extends Article {
 			$wgMemc->set( $projectTalkNSCacheKey, $remoteWikiProjectTalkNS, 7 * 86400 );
 		}
 
+		$contLang = MediaWiki\MediaWikiServices::getInstance()->getContentLanguage();
 		$parsed = str_replace(
 			[
 				$remoteWikiProjectNS . ':',
 				$remoteWikiProjectTalkNS . ':',
 			],
 			[
-				$wgContLang->getNsText( NS_PROJECT ) . ':',
-				$wgContLang->getNsText( NS_PROJECT_TALK ) . ':',
+				$contLang->getNsText( NS_PROJECT ) . ':',
+				$contLang->getNsText( NS_PROJECT_TALK ) . ':',
 			],
 			$parsed
 		);
