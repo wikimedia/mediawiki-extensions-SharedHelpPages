@@ -175,13 +175,13 @@ class SharedHelpPagesHooks {
 		$helpPage = "`$sharedHelpDBname`.`page`";
 		$query['tables']['pg3'] = $helpPage;
 		$query['conds'][] = '(pg3.page_namespace != 12 OR pg3.page_id IS NULL)';
-		$query['join_conds']['pg3'] = array(
+		$query['join_conds']['pg3'] = [
 			'LEFT JOIN',
-			array(
+			[
 				'pl_namespace = pg3.page_namespace',
 				'pl_title = pg3.page_title'
-			)
-		);
+			]
+		];
 
 		return true;
 	}
@@ -272,7 +272,7 @@ class SharedHelpPagesHooks {
 
 		if ( in_array( $wgLanguageCode, $wgSharedHelpLanguages ) && $wgLanguageCode !== 'en' ) {
 			$helpDBname = "{$wgLanguageCode}_wiki";
-		} elseif ( in_array( $wgLanguageCode, array( 'en', 'en-gb', 'en-ca' ) ) ) {
+		} elseif ( in_array( $wgLanguageCode, [ 'en', 'en-gb', 'en-ca' ] ) ) {
 			$helpDBname = 'shoutwiki';
 		} else {
 			// fall back to English help
@@ -291,7 +291,7 @@ class SharedHelpPagesHooks {
 	public static function isSupportedLanguage() {
 		global $wgLanguageCode, $wgSharedHelpLanguages;
 
-		$isEnglish = in_array( $wgLanguageCode, array( 'en', 'en-gb', 'en-ca' ) );
+		$isEnglish = in_array( $wgLanguageCode, [ 'en', 'en-gb', 'en-ca' ] );
 
 		return ( in_array( $wgLanguageCode, $wgSharedHelpLanguages ) || $isEnglish );
 	}

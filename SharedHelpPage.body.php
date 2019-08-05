@@ -292,11 +292,11 @@ class SharedHelpPage extends Article {
 		{
 			// Damn, no cache hit, so we need to hit the API instead.
 			// Yes, I realize that's a terrible pun.
-			$nsQueryParams = array(
+			$nsQueryParams = [
 				'action' => 'query',
 				'meta' => 'siteinfo',
 				'siprop' => 'namespaces|namespacealiases'
-			);
+			];
 			$namespaceData = $this->mPage->makeAPIRequest( $nsQueryParams, $langCode );
 
 			// Get the remote wiki's NS_PROJECT & NS_PROJECT_TALK
@@ -316,14 +316,14 @@ class SharedHelpPage extends Article {
 		}
 
 		$parsed = str_replace(
-			array(
+			[
 				$remoteWikiProjectNS . ':',
 				$remoteWikiProjectTalkNS . ':',
-			),
-			array(
+			],
+			[
 				$wgContLang->getNsText( NS_PROJECT ) . ':',
 				$wgContLang->getNsText( NS_PROJECT_TALK ) . ':',
-			),
+			],
 			$parsed
 		);
 
