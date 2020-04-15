@@ -8,15 +8,14 @@ class SharedHelpPagePage extends WikiPage {
 	private $config;
 
 	/**
-	 * @var BagOStuff
+	 * @var WANObjectCache
 	 */
 	private $cache;
 
 	public function __construct( Title $title, Config $config ) {
-		global $wgMemc;
 		parent::__construct( $title );
 		$this->config = $config;
-		$this->cache = $wgMemc;
+		$this->cache = MediaWikiServices::getInstance()->getMainWANObjectCache();
 	}
 
 	public function isLocal() {
