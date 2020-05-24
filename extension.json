@@ -1,6 +1,6 @@
 {
 	"name": "SharedHelpPages",
-	"version": "0.5",
+	"version": "0.6",
 	"author": [
 		"Kunal Mehta",
 		"Jack Phoenix"
@@ -10,7 +10,7 @@
 	"descriptionmsg": "sharedhelppages-desc",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.29.0"
+		"MediaWiki": ">= 1.34.0"
 	},
 	"config": {
 		"SharedHelpPagesDevelopmentMode": false,

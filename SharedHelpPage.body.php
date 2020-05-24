@@ -16,7 +16,7 @@ class SharedHelpPage extends Article {
 	private $config;
 
 	/**
-	 * @var BagOStuff
+	 * @var WANObjectCache
 	 */
 	private $cache;
 
@@ -31,9 +31,8 @@ class SharedHelpPage extends Article {
 	private static $touchedCache;
 
 	public function __construct( Title $title, Config $config ) {
-		global $wgMemc;
 		$this->config = $config;
-		$this->cache = $wgMemc;
+		$this->cache = MediaWikiServices::getInstance()->getMainWANObjectCache();
 		parent::__construct( $title );
 	}
 
@@ -277,13 +276,13 @@ class SharedHelpPage extends Article {
 		// bad for things like the project namespace name and whatnot.
 		// So, we need to get the remote wiki's project (&project talk) NS names;
 		// either from memcached, or failing that, via an API query.
-		global $wgLanguageCode, $wgMemc;
+		global $wgLanguageCode;
 
-		$projectNSCacheKey = $wgMemc->makeKey( 'helppages', $wgLanguageCode, 'projectns' );
-		$projectTalkNSCacheKey = $wgMemc->makeKey( 'helppages', $wgLanguageCode, 'projecttalkns' );
+		$projectNSCacheKey = $this->cache->makeKey( 'helppages', $wgLanguageCode, 'projectns' );
+		$projectTalkNSCacheKey = $this->cache->makeKey( 'helppages', $wgLanguageCode, 'projecttalkns' );
 
-		$remoteWikiProjectNS = $wgMemc->get( $projectNSCacheKey );
-		$remoteWikiProjectTalkNS = $wgMemc->get( $projectTalkNSCacheKey );
+		$remoteWikiProjectNS = $this->cache->get( $projectNSCacheKey );
+		$remoteWikiProjectTalkNS = $this->cache->get( $projectTalkNSCacheKey );
 
 		if (
 			$remoteWikiProjectNS === false ||
@@ -311,11 +310,11 @@ class SharedHelpPage extends Article {
 
 			// Store both values in memcached for a week, since namespace names
 			// (especially on Hub(s)) are unlikely to change very often
-			$wgMemc->set( $projectNSCacheKey, $remoteWikiProjectNS, 7 * 86400 );
-			$wgMemc->set( $projectTalkNSCacheKey, $remoteWikiProjectTalkNS, 7 * 86400 );
+			$this->cache->set( $projectNSCacheKey, $remoteWikiProjectNS, 7 * 86400 );
+			$this->cache->set( $projectTalkNSCacheKey, $remoteWikiProjectTalkNS, 7 * 86400 );
 		}
 
-		$contLang = MediaWiki\MediaWikiServices::getInstance()->getContentLanguage();
+		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
 		$parsed = str_replace(
 			[
 				$remoteWikiProjectNS . ':',
