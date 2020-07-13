@@ -72,7 +72,7 @@ class SharedHelpPagesHooks {
 	 * @param WikiPage $page
 	 * @return bool
 	 */
-	public static function onPageContentInsertComplete( WikiPage $page ) {
+	public static function onPageSaveComplete( WikiPage $page ) {
 		$title = $page->getTitle();
 		if ( self::isSharedHelpPage( $title ) ) {
 			$inv = new SharedHelpPageCacheInvalidator( $title->getText(), [ 'links' ] );
@@ -89,7 +89,7 @@ class SharedHelpPagesHooks {
 	 * @return bool
 	 */
 	public static function onArticleDeleteComplete( WikiPage $page ) {
-		return self::onPageContentInsertComplete( $page );
+		return self::onPageSaveComplete( $page );
 	}
 
 	/**
@@ -229,11 +229,10 @@ class SharedHelpPagesHooks {
 	 * This enables the display of "Content is available under <license>" message
 	 * in the page footer instead of only the copyright icon being displayed.
 	 *
-	 * @param SkinTemplate $skTpl
-	 * @param SkinTemplate|MonoBookTemplate|VectorTemplate|... $tpl A subclass of SkinTemplate, i.e. for MonoBook it'd be MonoBookTemplate
+	 * @param OutputPage $out
 	 * @return bool
 	 */
-	public static function onSkinTemplateOutputPageBeforeExec( &$skTpl, &$tpl ) {
+	public static function onBeforePageDisplay( OutputPage $out ) {
 		global $wgDBname;
 
 		$sharedHelpDBname = self::determineDatabase();
@@ -245,9 +244,8 @@ class SharedHelpPagesHooks {
 			return true;
 		}
 
-		$title = $skTpl->getTitle();
-		if ( $title->inNamespace( NS_HELP ) ) {
-			$tpl->set( 'copyright', $skTpl->getCopyright() );
+		if ( $out->getTitle()->inNamespace( NS_HELP ) ) {
+			$out->setCopyright( true );
 		}
 
 		return true;

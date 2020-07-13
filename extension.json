@@ -1,6 +1,6 @@
 {
 	"name": "SharedHelpPages",
-	"version": "0.6",
+	"version": "0.7",
 	"author": [
 		"Kunal Mehta",
 		"Jack Phoenix"
@@ -10,7 +10,7 @@
 	"descriptionmsg": "sharedhelppages-desc",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.34.0"
+		"MediaWiki": ">= 1.35.0"
 	},
 	"config": {
 		"SharedHelpPagesDevelopmentMode": false,
@@ -39,12 +39,12 @@
 	},
 	"Hooks": {
 		"EditPage::showEditForm:initial": "SharedHelpPagesHooks::displayMessageOnEditPage",
-		"SkinTemplateOutputPageBeforeExec": "SharedHelpPagesHooks::onSkinTemplateOutputPageBeforeExec",
+		"BeforePageDisplay": "SharedHelpPagesHooks::onBeforePageDisplay",
 		"SkinTemplateNavigation::Universal": "SharedHelpPagesHooks::onSkinTemplateNavigationUniversal",
 		"TitleIsAlwaysKnown": "SharedHelpPagesHooks::onTitleIsAlwaysKnown",
 		"ArticleFromTitle": "SharedHelpPagesHooks::onArticleFromTitle",
 		"LinksUpdateComplete": "SharedHelpPagesHooks::onLinksUpdateComplete",
-		"PageContentInsertComplete": "SharedHelpPagesHooks::onPageContentInsertComplete",
+		"PageSaveComplete": "SharedHelpPagesHooks::onPageSaveComplete",
 		"ArticleDeleteComplete": "SharedHelpPagesHooks::onArticleDeleteComplete",
 		"WikiPageFactory": "SharedHelpPagesHooks::onWikiPageFactory",
 		"WantedPages::getQueryInfo": "SharedHelpPagesHooks::modifyWantedPagesSQL"
