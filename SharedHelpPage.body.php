@@ -247,7 +247,9 @@ class SharedHelpPage extends Article {
 	 * @return array|bool
 	 */
 	protected function parseWikiText( Title $title, $langCode ) {
-		$unLocalizedName = MWNamespace::getCanonicalName( NS_HELP ) . ':' . $title->getText();
+		$unLocalizedName = MediaWikiServices::getInstance()
+			->getNamespaceInfo()
+			->getCanonicalName( NS_HELP ) . ':' . $title->getText();
 		$wikitext = '{{:' . $unLocalizedName . '}}';
 		$params = [
 			'action' => 'parse',
