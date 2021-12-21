@@ -45,7 +45,7 @@ class SharedHelpPagesHooks {
 	 * @return bool
 	 */
 	protected static function isSharedHelpPage( Title $title ) {
-		return self::determineDatabase() === wfWikiID() // On the Hub wiki
+		return self::determineDatabase() === WikiMap::getCurrentWikiId() // On the Hub wiki
 			&& $title->inNamespace( NS_HELP ); // is a help page.
 	}
 
@@ -111,7 +111,7 @@ class SharedHelpPagesHooks {
 			// Don't run this code on the source wiki of the shared help pages.
 			// Also don't run this code if SharedHelpPages isn't enabled for the
 			// current wiki's language.
-			if ( self::determineDatabase() === wfWikiID() || !self::isSupportedLanguage() ) {
+			if ( self::determineDatabase() === WikiMap::getCurrentWikiId() || !self::isSupportedLanguage() ) {
 				return true;
 			}
 

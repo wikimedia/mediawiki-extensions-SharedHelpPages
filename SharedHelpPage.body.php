@@ -171,7 +171,7 @@ class SharedHelpPage extends Article {
 	 * @return bool
 	 */
 	public function isSourcePage() {
-		if ( wfWikiID() !== SharedHelpPagesHooks::determineDatabase() ) {
+		if ( WikiMap::getCurrentWikiId() !== SharedHelpPagesHooks::determineDatabase() ) {
 			return false;
 		}
 
@@ -218,7 +218,7 @@ class SharedHelpPage extends Article {
 	 */
 	protected static function canBeGlobal( Title $title ) {
 		// Don't run this code for Hub.
-		if ( wfWikiID() === SharedHelpPagesHooks::determineDatabase() ) {
+		if ( WikiMap::getCurrentWikiId() === SharedHelpPagesHooks::determineDatabase() ) {
 			return false;
 		}
 
