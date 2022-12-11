@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\MediaWikiServices;
+
 class SharedHelpPagePage extends WikiPage {
 
 	/**
@@ -111,7 +113,7 @@ class SharedHelpPagePage extends WikiPage {
 		$url = wfAppendQuery( $baseURL, $params );
 
 		wfDebugLog( 'SharedHelpPages', "Making a request to $url" );
-		$req = MWHttpRequest::factory(
+		$req = MediaWikiServices::getInstance()->getHttpRequestFactory()->create(
 			$url,
 			[ 'timeout' => $this->config->get( 'SharedHelpPagesTimeout' ) ]
 		);
