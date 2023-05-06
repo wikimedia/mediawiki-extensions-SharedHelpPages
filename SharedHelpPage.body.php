@@ -339,7 +339,7 @@ class SharedHelpPage extends Article {
 		static $list = null;
 		if ( $list === null ) {
 			$list = [];
-			if ( Hooks::run( 'SharedHelpPagesWikis', [ &$list ] ) ) {
+			if ( MediaWikiServices::getInstance()->getHookContainer()->run( 'SharedHelpPagesWikis', [ &$list ] ) ) {
 				// Fallback if no hook override
 				global $wgLocalDatabases;
 				$list = $wgLocalDatabases;
