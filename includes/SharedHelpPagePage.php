@@ -96,7 +96,7 @@ class SharedHelpPagePage extends WikiPage {
 	/**
 	 * Makes an API request to the central wiki
 	 *
-	 * @param $params array
+	 * @param array $params
 	 * @param string $langCode ISO 639 language code, used to select the correct URL
 	 * @return array|bool false if the request failed
 	 */
@@ -104,7 +104,8 @@ class SharedHelpPagePage extends WikiPage {
 		$params['format'] = 'json';
 
 		if ( in_array( $langCode, $this->config->get( 'SharedHelpLanguages' ) ) && $langCode != 'en' ) {
-			$baseURL = "http://{$langCode}.shoutwiki.com/w/api.php"; // @todo FIXME: move to config, I guess
+			// @todo FIXME: move to config, I guess
+			$baseURL = "http://{$langCode}.shoutwiki.com/w/api.php";
 		} else {
 			// Fall back to English
 			$baseURL = $this->config->get( 'SharedHelpPagesAPIUrl' );

@@ -8,7 +8,7 @@ class SharedHelpPage extends Article {
 	 * Cache version of action=parse
 	 * output
 	 */
-	const PARSED_CACHE_VERSION = 2;
+	public const PARSED_CACHE_VERSION = 2;
 
 	/**
 	 * @var Config
@@ -270,7 +270,11 @@ class SharedHelpPage extends Article {
 			// Whereas production URLs look like this: http://www.shoutwiki.com/wiki/Help:Links
 			// So this is really needed only for devboxes etc.
 			global $wgArticlePath;
-			$parsed['text'] = preg_replace( '/href="\/wiki\//', 'href="' . str_replace( '$1', '', $wgArticlePath ), $parsed['text'] );
+			$parsed['text'] = preg_replace(
+				'/href="\/wiki\//',
+				'href="' . str_replace( '$1', '', $wgArticlePath ),
+				$parsed['text']
+			);
 		}
 
 		// HACK TIME! The parsed wikitext acts as if it was parsed on the remote
@@ -289,8 +293,7 @@ class SharedHelpPage extends Article {
 		if (
 			$remoteWikiProjectNS === false ||
 			$remoteWikiProjectTalkNS === false
-		)
-		{
+		) {
 			// Damn, no cache hit, so we need to hit the API instead.
 			// Yes, I realize that's a terrible pun.
 			$nsQueryParams = [

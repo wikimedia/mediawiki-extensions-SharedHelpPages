@@ -17,7 +17,7 @@ class SharedHelpPageCacheInvalidator {
 	 */
 	private $options;
 
-	public function __construct( $pagename, array $options = [] ) {
+	public function __construct( Title $pagename, array $options = [] ) {
 		$this->pagename = $pagename;
 		$this->options = $options;
 	}

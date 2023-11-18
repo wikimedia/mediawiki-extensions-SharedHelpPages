@@ -3,8 +3,8 @@
 class SharedHelpPagesHooks {
 
 	/**
-	 * @param Title $title
-	 * @param Article|null $page
+	 * @param Title &$title
+	 * @param Article|null &$page
 	 * @param IContextSource $context
 	 * @return bool
 	 */
@@ -45,14 +45,16 @@ class SharedHelpPagesHooks {
 	 * @return bool
 	 */
 	protected static function isSharedHelpPage( Title $title ) {
-		return self::determineDatabase() === WikiMap::getCurrentWikiId() // On the Hub wiki
-			&& $title->inNamespace( NS_HELP ); // is a help page.
+		// On the Hub wiki
+		return self::determineDatabase() === WikiMap::getCurrentWikiId()
+			// is a help page.
+			&& $title->inNamespace( NS_HELP );
 	}
 
 	/**
 	 * After a LinksUpdate runs for a help page, queue remote Squid purges
 	 *
-	 * @param LinksUpdate $lu
+	 * @param LinksUpdate &$lu
 	 * @return bool
 	 */
 	public static function onLinksUpdateComplete( LinksUpdate &$lu ) {
@@ -100,8 +102,8 @@ class SharedHelpPagesHooks {
 	 * This function originally changed the "edit" links to point to a different
 	 * wiki for pages in the Help: namespace.
 	 *
-	 * @param SkinTemplate $skTemplate
-	 * @param array $links
+	 * @param SkinTemplate &$skTemplate
+	 * @param array &$links
 	 * @return bool
 	 */
 	public static function onSkinTemplateNavigationUniversal( &$skTemplate, &$links ) {
@@ -135,7 +137,7 @@ class SharedHelpPagesHooks {
 
 	/**
 	 * @param Title $title
-	 * @param $page
+	 * @param WikiPage &$page
 	 * @return bool
 	 */
 	public static function onWikiPageFactory( Title $title, &$page ) {
@@ -157,7 +159,7 @@ class SharedHelpPagesHooks {
 	 * Hooked into the WantedPages::getQueryInfo hook.
 	 *
 	 * @param WantedPagesPage $wantedPagesPage
-	 * @param array $array SQL query conditions
+	 * @param array $query SQL query conditions
 	 * @return bool
 	 */
 	public static function modifyWantedPagesSQL( $wantedPagesPage, $query ) {
@@ -190,7 +192,7 @@ class SharedHelpPagesHooks {
 	 * Shows a warning-ish message on &action=edit whenever a user tries to
 	 * edit a shared help page
 	 *
-	 * @param EditPage $editPage
+	 * @param EditPage &$editPage
 	 * @return bool
 	 */
 	public static function displayMessageOnEditPage( &$editPage ) {
@@ -283,7 +285,6 @@ class SharedHelpPagesHooks {
 	/**
 	 * Is SharedHelpPages available for the current wiki's language (code)?
 	 *
-	 * @param string $langCode ISO 639 language code
 	 * @return bool True if it's available, otherwise false
 	 */
 	public static function isSupportedLanguage() {
