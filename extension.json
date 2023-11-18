@@ -50,8 +50,8 @@
 		"WantedPages::getQueryInfo": "SharedHelpPagesHooks::modifyWantedPagesSQL"
 	},
 	"ResourceFileModulePaths": {
-		"localBasePath": "",
-		"remoteExtPath": "SharedHelpPages"
+		"localBasePath": "resources",
+		"remoteExtPath": "SharedHelpPages/resources"
 	},
 	"ResourceModules": {
 		"ext.SharedHelpPages": {
