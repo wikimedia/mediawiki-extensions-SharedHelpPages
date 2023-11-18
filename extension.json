@@ -30,12 +30,12 @@
 		]
 	},
 	"AutoloadClasses": {
-		"SharedHelpPagesHooks": "SharedHelpPages.hooks.php",
-		"SharedHelpPage": "SharedHelpPage.body.php",
-		"SharedHelpPagePage": "SharedHelpPagePage.php",
-		"SharedHelpPageCacheInvalidator": "SharedHelpPageCacheInvalidator.php",
-		"SharedHelpPageLocalJobSubmitJob": "SharedHelpPageLocalJobSubmitJob.php",
-		"LocalSharedHelpPageCacheUpdateJob": "LocalSharedHelpPageCacheUpdateJob.php"
+		"SharedHelpPagesHooks": "includes/SharedHelpPagesHooks.php",
+		"SharedHelpPage": "includes/SharedHelpPage.php",
+		"SharedHelpPagePage": "includes/SharedHelpPagePage.php",
+		"SharedHelpPageCacheInvalidator": "includes/SharedHelpPageCacheInvalidator.php",
+		"SharedHelpPageLocalJobSubmitJob": "includes/jobs/SharedHelpPageLocalJobSubmitJob.php",
+		"LocalSharedHelpPageCacheUpdateJob": "includes/jobs/LocalSharedHelpPageCacheUpdateJob.php"
 	},
 	"Hooks": {
 		"EditPage::showEditForm:initial": "SharedHelpPagesHooks::displayMessageOnEditPage",
