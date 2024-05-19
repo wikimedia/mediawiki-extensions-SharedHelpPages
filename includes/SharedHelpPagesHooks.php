@@ -54,17 +54,14 @@ class SharedHelpPagesHooks {
 	/**
 	 * After a LinksUpdate runs for a help page, queue remote Squid purges
 	 *
-	 * @param LinksUpdate &$lu
-	 * @return bool
+	 * @param LinksUpdate $lu
 	 */
-	public static function onLinksUpdateComplete( LinksUpdate &$lu ) {
+	public static function onLinksUpdateComplete( $lu ) {
 		$title = $lu->getTitle();
 		if ( self::isSharedHelpPage( $title ) ) {
 			$inv = new SharedHelpPageCacheInvalidator( $title->getText() );
 			$inv->invalidate();
 		}
-
-		return true;
 	}
 
 	/**
