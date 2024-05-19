@@ -1,9 +1,11 @@
 <?php
-
 /**
  * A job that runs on local wikis to purge Squid and possibly
  * queue local HTMLCacheUpdate jobs
  */
+
+use MediaWiki\MediaWikiServices;
+
 class LocalSharedHelpPageCacheUpdateJob extends Job {
 	/**
 	 * @param Title $title
@@ -18,10 +20,13 @@ class LocalSharedHelpPageCacheUpdateJob extends Job {
 		// We want to purge the cache of the accompanying page so the tabs change colors
 		$other = $title->getOtherPage();
 
-		$title->purgeSquid();
-		$other->purgeSquid();
+		$htmlCache = MediaWikiServices::getInstance()->getHtmlCacheUpdater();
+		$htmlCache->purgeTitleUrls( $title, $htmlCache::PURGE_INTENT_TXROUND_REFLECTED );
+		$htmlCache->purgeTitleUrls( $other, $htmlCache::PURGE_INTENT_TXROUND_REFLECTED );
+
 		HTMLFileCache::clearFileCache( $title );
 		HTMLFileCache::clearFileCache( $other );
+
 		if ( $this->params['touch'] ) {
 			$title->touchLinks();
 		}
