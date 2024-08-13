@@ -212,7 +212,7 @@ class SharedHelpPagesHooks {
 		if ( SharedHelpPage::shouldDisplaySharedPage( $title ) ) {
 			// Add a notice indicating that the content was originally taken from ShoutWiki Hub
 			$msg = '<div style="border: solid 1px; padding: 10px; margin: 5px" class="sharedHelpEditInfo">';
-			$msg .= wfMessage( 'sharedhelppages-notice', $title->getPrefixedText() )->parse();
+			$msg .= wfMessage( 'sharedhelppages-notice', $title->getPrefixedDBkey() )->parse();
 			$msg .= '</div>';
 
 			$editPage->editFormPageTop .= $msg;
