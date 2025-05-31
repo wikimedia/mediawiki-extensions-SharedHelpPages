@@ -45,7 +45,12 @@ class SharedHelpPage extends Article {
 		}
 
 		$out = $this->getContext()->getOutput();
-		$parsedOutput = $this->getRemoteParsedText( self::getCentralTouched( $title ) );
+		if ( $this->config->get( 'SharedHelpPagesDevelopmentMode' ) ) {
+			$page_touched = false;
+		} else {
+			$page_touched = self::getCentralTouched( $title );
+		}
+		$parsedOutput = $this->getRemoteParsedText( $page_touched );
 
 		// If the help page is empty or the API request failed, show the normal
 		// missing article page
@@ -261,6 +266,9 @@ class SharedHelpPage extends Article {
 			'formatversion' => 2
 		];
 		$data = $this->mPage->makeAPIRequest( $params, $langCode );
+		if ( !$data || $data === false ) {
+			return false;
+		}
 		$parsed = $data['parse'];
 
 		if ( $this->config->get( 'SharedHelpPagesDevelopmentMode' ) ) {
@@ -290,6 +298,9 @@ class SharedHelpPage extends Article {
 		$remoteWikiProjectNS = $this->cache->get( $projectNSCacheKey );
 		$remoteWikiProjectTalkNS = $this->cache->get( $projectTalkNSCacheKey );
 
+		// @todo FIXME: for whatever reason the code below does awful, awful things with the namespaces,
+		// even though it's not supposed to. So let's just disable it for the time being, sadly.
+		/*
 		if (
 			$remoteWikiProjectNS === false ||
 			$remoteWikiProjectTalkNS === false
@@ -302,24 +313,26 @@ class SharedHelpPage extends Article {
 				'siprop' => 'namespaces|namespacealiases'
 			];
 			$namespaceData = $this->mPage->makeAPIRequest( $nsQueryParams, $langCode );
+			if ( $namespaceData !== false ) {
+				// Get the remote wiki's NS_PROJECT & NS_PROJECT_TALK
+				$remoteWikiProjectNS = $namespaceData['query']['namespaces'][NS_PROJECT]['*'];
+				$remoteWikiProjectTalkNS = $namespaceData['query']['namespaces'][NS_PROJECT_TALK]['*'];
 
-			// Get the remote wiki's NS_PROJECT & NS_PROJECT_TALK
-			$remoteWikiProjectNS = $namespaceData['query']['namespaces'][NS_PROJECT]['*'];
-			$remoteWikiProjectTalkNS = $namespaceData['query']['namespaces'][NS_PROJECT_TALK]['*'];
+				// Sanitize it. This should have the nice side-effect of avoiding (too many)
+				// false positives since about the only place where underscores are used
+				// in namespace names are, unsurprisingly, URLs. :)
+				$remoteWikiProjectNS = str_replace( ' ', '_', $remoteWikiProjectNS );
+				$remoteWikiProjectTalkNS = str_replace( ' ', '_', $remoteWikiProjectTalkNS );
 
-			// Sanitize it. This should have the nice side-effect of avoiding (too many)
-			// false positives since about the only place where underscores are used
-			// in namespace names are, unsurprisingly, URLs. :)
-			$remoteWikiProjectNS = str_replace( ' ', '_', $remoteWikiProjectNS );
-			$remoteWikiProjectTalkNS = str_replace( ' ', '_', $remoteWikiProjectTalkNS );
-
-			// Store both values in memcached for a week, since namespace names
-			// (especially on Hub(s)) are unlikely to change very often
-			$this->cache->set( $projectNSCacheKey, $remoteWikiProjectNS, 7 * 86400 );
-			$this->cache->set( $projectTalkNSCacheKey, $remoteWikiProjectTalkNS, 7 * 86400 );
+				// Store both values in memcached for a week, since namespace names
+				// (especially on Hub(s)) are unlikely to change very often
+				$this->cache->set( $projectNSCacheKey, $remoteWikiProjectNS, 7 * 86400 );
+				$this->cache->set( $projectTalkNSCacheKey, $remoteWikiProjectTalkNS, 7 * 86400 );
+			}
 		}
 
 		$contLang = MediaWikiServices::getInstance()->getContentLanguage();
+
 		$parsed = str_replace(
 			[
 				$remoteWikiProjectNS . ':',
@@ -331,6 +344,7 @@ class SharedHelpPage extends Article {
 			],
 			$parsed
 		);
+		*/
 
 		return $data !== false ? $parsed : false;
 	}

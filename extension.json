@@ -15,7 +15,7 @@
 	"config": {
 		"SharedHelpPagesDevelopmentMode": false,
 		"SharedHelpPagesCacheExpiry": 604800,
-		"SharedHelpPagesAPIUrl": "http://www.shoutwiki.com/w/api.php",
+		"SharedHelpPagesAPIUrl": "https://www.shoutwiki.com/w/api.php",
 		"SharedHelpPagesTimeout": 10,
 		"SharedHelpLanguages": [
 			"en",
