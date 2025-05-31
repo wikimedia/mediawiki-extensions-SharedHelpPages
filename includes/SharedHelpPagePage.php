@@ -14,6 +14,11 @@ class SharedHelpPagePage extends WikiPage {
 	 */
 	private $cache;
 
+	/**
+	 * Cache version of API remote URL
+	 */
+	public const CACHE_VERSION = 3;
+
 	public function __construct( Title $title, Config $config ) {
 		parent::__construct( $title );
 		$this->config = $config;
@@ -69,7 +74,7 @@ class SharedHelpPagePage extends WikiPage {
 	 * @return string
 	 */
 	protected function getRemoteURLFromAPI() {
-		$key = 'sharedhelppages:url:' . md5( $this->getPagename() );
+		$key = 'sharedhelppages:url:' . md5( $this->getPagename() ) . 'version-' . self::CACHE_VERSION;
 		$data = $this->cache->get( $key );
 		if ( $data === false ) {
 			$params = [
@@ -105,7 +110,7 @@ class SharedHelpPagePage extends WikiPage {
 
 		if ( in_array( $langCode, $this->config->get( 'SharedHelpLanguages' ) ) && $langCode != 'en' ) {
 			// @todo FIXME: move to config, I guess
-			$baseURL = "http://{$langCode}.shoutwiki.com/w/api.php";
+			$baseURL = "https://{$langCode}.shoutwiki.com/w/api.php";
 		} else {
 			// Fall back to English
 			$baseURL = $this->config->get( 'SharedHelpPagesAPIUrl' );
