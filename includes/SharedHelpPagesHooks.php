@@ -1,11 +1,15 @@
 <?php
 
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Title\Title;
+use MediaWiki\WikiMap\WikiMap;
+
 class SharedHelpPagesHooks {
 
 	/**
-	 * @param Title &$title
+	 * @param MediaWiki\Title\Title &$title
 	 * @param Article|null &$page
-	 * @param IContextSource $context
+	 * @param MediaWiki\Context\IContextSource $context
 	 * @return bool
 	 */
 	public static function onArticleFromTitle( Title &$title, &$page, $context ) {
@@ -26,7 +30,7 @@ class SharedHelpPagesHooks {
 	/**
 	 * Mark shared help pages as known so they appear in blue
 	 *
-	 * @param Title $title Title to check
+	 * @param MediaWiki\Title\Title $title Title to check
 	 * @param bool &$isKnown Whether the page should be considered known
 	 * @return bool
 	 */
@@ -41,7 +45,7 @@ class SharedHelpPagesHooks {
 	/**
 	 * Whether a page is a shared help page on the Hub wiki
 	 *
-	 * @param Title $title
+	 * @param MediaWiki\Title\Title $title
 	 * @return bool
 	 */
 	protected static function isSharedHelpPage( Title $title ) {
@@ -54,7 +58,7 @@ class SharedHelpPagesHooks {
 	/**
 	 * After a LinksUpdate runs for a help page, queue remote Squid purges
 	 *
-	 * @param LinksUpdate $lu
+	 * @param MediaWiki\Deferred\LinksUpdate\LinksUpdate $lu
 	 */
 	public static function onLinksUpdateComplete( $lu ) {
 		$title = $lu->getTitle();
@@ -133,7 +137,7 @@ class SharedHelpPagesHooks {
 	}
 
 	/**
-	 * @param Title $title
+	 * @param MediaWiki\Title\Title $title
 	 * @param WikiPage &$page
 	 * @return bool
 	 */
@@ -155,7 +159,7 @@ class SharedHelpPagesHooks {
 	 *
 	 * Hooked into the WantedPages::getQueryInfo hook.
 	 *
-	 * @param WantedPagesPage $wantedPagesPage
+	 * @param MediaWiki\SpecialPage\WantedPagesPage $wantedPagesPage
 	 * @param array $query SQL query conditions
 	 * @return bool
 	 */
@@ -189,7 +193,7 @@ class SharedHelpPagesHooks {
 	 * Shows a warning-ish message on &action=edit whenever a user tries to
 	 * edit a shared help page
 	 *
-	 * @param EditPage &$editPage
+	 * @param MediaWiki\EditPage\EditPage &$editPage
 	 * @return bool
 	 */
 	public static function displayMessageOnEditPage( &$editPage ) {
@@ -228,7 +232,7 @@ class SharedHelpPagesHooks {
 	 * This enables the display of "Content is available under <license>" message
 	 * in the page footer instead of only the copyright icon being displayed.
 	 *
-	 * @param OutputPage $out
+	 * @param MediaWiki\Output\OutputPage $out
 	 * @return bool
 	 */
 	public static function onBeforePageDisplay( OutputPage $out ) {

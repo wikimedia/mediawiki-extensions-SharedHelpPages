@@ -5,6 +5,7 @@
  */
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 class LocalSharedHelpPageCacheUpdateJob extends Job {
 	/**
