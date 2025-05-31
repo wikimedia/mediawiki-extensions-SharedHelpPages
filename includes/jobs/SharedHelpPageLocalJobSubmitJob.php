@@ -1,6 +1,7 @@
 <?php
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 /**
  * Job class that submits LocalSharedHelpPageCacheUpdateJob jobs
@@ -15,19 +16,11 @@ class SharedHelpPageLocalJobSubmitJob extends Job {
 			Title::newFromText( 'Help:' . $this->params['pagename'] ),
 			$this->params
 		);
-		if ( method_exists( MediaWikiServices::class, 'getJobQueueGroupFactory' ) ) {
-			// MW 1.37+
-			$jobQueueGroupFactory = MediaWikiServices::getInstance()->getJobQueueGroupFactory();
-		} else {
-			$jobQueueGroupFactory = null;
-		}
+
+		$jobQueueGroupFactory = MediaWikiServices::getInstance()->getJobQueueGroupFactory();
+
 		foreach ( SharedHelpPages::getEnabledWikis() as $wiki ) {
-			if ( $jobQueueGroupFactory ) {
-				// MW 1.37+
 				$jobQueueGroupFactory->makeJobQueueGroup( $wiki )->push( $job );
-			} else {
-				JobQueueGroup::singleton( $wiki )->push( $job );
-			}
 		}
 	}
 }

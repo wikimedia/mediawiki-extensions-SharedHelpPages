@@ -1,6 +1,7 @@
 <?php
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 class SharedHelpPageCacheInvalidator {
 	/**
@@ -30,13 +31,7 @@ class SharedHelpPageCacheInvalidator {
 			return;
 		}
 
-		if ( method_exists( MediaWikiServices::class, 'getJobQueueGroup' ) ) {
-			// MW 1.37+
-			$jobQueueGroup = MediaWikiServices::getInstance()->getJobQueueGroup();
-		} else {
-			$jobQueueGroup = JobQueueGroup::singleton();
-		}
-		$jobQueueGroup->push( new SharedHelpPageLocalJobSubmitJob(
+		MediaWikiServices::getInstance()->getJobQueueGroup()->push( new SharedHelpPageLocalJobSubmitJob(
 			Title::newFromText( 'Help:' . $this->pagename ),
 			[
 				'pagename' => $this->pagename,

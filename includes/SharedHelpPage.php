@@ -1,6 +1,10 @@
 <?php
 
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Title\Title;
+use MediaWiki\WikiMap\WikiMap;
 
 class SharedHelpPage extends Article {
 
@@ -11,7 +15,7 @@ class SharedHelpPage extends Article {
 	public const PARSED_CACHE_VERSION = 2;
 
 	/**
-	 * @var Config
+	 * @var MediaWiki\Config\Config
 	 */
 	private $config;
 
@@ -66,7 +70,7 @@ class SharedHelpPage extends Article {
 	 * ParserOutput on the local wiki, if
 	 * they exist.
 	 *
-	 * @param OutputPage $out
+	 * @param MediaWiki\Output\OutputPage $out
 	 * @param array $parsedOutput
 	 */
 	private function loadModules( OutputPage $out, array $parsedOutput ) {
@@ -91,7 +95,7 @@ class SharedHelpPage extends Article {
 	 * Given a Title, assuming it doesn't exist, should
 	 * we display a shared help page on it
 	 *
-	 * @param Title $title
+	 * @param MediaWiki\Title\Title $title
 	 * @return bool
 	 */
 	public static function shouldDisplaySharedPage( Title $title ) {
@@ -129,7 +133,7 @@ class SharedHelpPage extends Article {
 	 * Get the page_touched of the shared help page
 	 *
 	 * @todo this probably shouldn't be static
-	 * @param Title $title
+	 * @param MediaWiki\Title\Title $title
 	 * @return string|bool
 	 */
 	protected static function getCentralTouched( Title $title ) {
@@ -213,7 +217,7 @@ class SharedHelpPage extends Article {
 	 * Checks whether the given page can be global
 	 * doesn't check the actual database
 	 *
-	 * @param Title $title
+	 * @param MediaWiki\Title\Title $title
 	 * @return bool
 	 */
 	protected static function canBeGlobal( Title $title ) {
@@ -232,7 +236,7 @@ class SharedHelpPage extends Article {
 	}
 
 	/**
-	 * @param Title $title
+	 * @param MediaWiki\Title\Title $title
 	 * @return SharedHelpPagePage
 	 */
 	public function newPage( Title $title ) {
@@ -242,7 +246,7 @@ class SharedHelpPage extends Article {
 	/**
 	 * Use action=parse to get rendered HTML of a page
 	 *
-	 * @param Title $title
+	 * @param MediaWiki\Title\Title $title
 	 * @param string $langCode
 	 * @return array|bool
 	 */

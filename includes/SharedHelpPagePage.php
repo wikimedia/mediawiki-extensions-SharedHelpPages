@@ -1,6 +1,9 @@
 <?php
 
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\WikiMap\WikiMap;
 
 class SharedHelpPagePage extends WikiPage {
 
