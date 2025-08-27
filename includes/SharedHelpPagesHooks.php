@@ -1,5 +1,6 @@
 <?php
 
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Output\OutputPage;
 use MediaWiki\Title\Title;
 use MediaWiki\WikiMap\WikiMap;
@@ -20,7 +21,7 @@ class SharedHelpPagesHooks {
 		) {
 			$page = new SharedHelpPage(
 				$title,
-				ConfigFactory::getDefaultInstance()->makeConfig( 'sharedhelppages' )
+				MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'sharedhelppages' )
 			);
 		}
 
@@ -145,7 +146,7 @@ class SharedHelpPagesHooks {
 		if ( SharedHelpPage::shouldDisplaySharedPage( $title ) ) {
 			$page = new SharedHelpPagePage(
 				$title,
-				ConfigFactory::getDefaultInstance()->makeConfig( 'sharedhelppages' )
+				MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'sharedhelppages' )
 			);
 			return false;
 		}
