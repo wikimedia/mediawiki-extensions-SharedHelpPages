@@ -152,7 +152,7 @@ class SharedHelpPage extends Article {
 		$sharedHelpDB = SharedHelpPagesHooks::determineDatabase();
 		$lbFactory = MediaWikiServices::getInstance()->getDBLoadBalancerFactory();
 		$lb = $lbFactory->getMainLB( $sharedHelpDB );
-		$dbr = $lb->getConnectionRef( DB_REPLICA, [], $sharedHelpDB );
+		$dbr = $lb->getConnection( DB_REPLICA, [], $sharedHelpDB );
 		$row = $dbr->selectRow(
 			[ 'page' ],
 			[ 'page_touched' ],
