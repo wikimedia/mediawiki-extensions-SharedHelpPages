@@ -63,7 +63,7 @@
 		"LocalSharedHelpPageCacheUpdateJob": "LocalSharedHelpPageCacheUpdateJob"
 	},
 	"ConfigRegistry": {
-		"sharedhelppages": "GlobalVarConfig::newInstance"
+		"sharedhelppages": "MediaWiki\\Config\\GlobalVarConfig::newInstance"
 	},
 	"manifest_version": 1
 }
