@@ -37,7 +37,8 @@ class SharedHelpPagePage extends WikiPage {
 	 */
 	public function getWikiDisplayName() {
 		$url = $this->getSourceURL();
-		return wfParseUrl( $url )['host'];
+		$url = MediaWikiServices::getInstance()->getUrlUtils()->parse( $url );
+		return $url['host'];
 	}
 
 	/**
